@@ -3,7 +3,7 @@ import "../App.css";
 
 const WORDS = ["ON TIME.", "EVERY DELAY.", "EVERY ROUTE.", "THE FUTURE."];
 
-export default function App() {
+export default function HomePage({ toggleTheme }) {
   const [wordIndex, setWordIndex] = useState(0);
   const [displayed, setDisplayed] = useState("");
   const [deleting, setDeleting] = useState(false);
@@ -54,10 +54,30 @@ export default function App() {
             </li>
           ))}
         </ul>
-        <button style={{ background: "linear-gradient(135deg, #e63232, #f0a030)", color: "#fff", border: "none", padding: "0.6rem 1.6rem", fontSize: "0.75rem", fontWeight: 600, letterSpacing: "2px", textTransform: "uppercase", cursor: "pointer", borderRadius: "2px", ...hover }}
-          onMouseEnter={e => { e.currentTarget.style.transform = "scale(1.05)"; e.currentTarget.style.boxShadow = "0 0 20px rgba(230,50,50,0.4)"; }}
-          onMouseLeave={e => { e.currentTarget.style.transform = "scale(1)"; e.currentTarget.style.boxShadow = "none"; }}
-        >LOGIN</button>
+        <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+          {/* THEME TOGGLE */}
+          <div onClick={toggleTheme} style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}>
+            <span style={{ fontSize: "0.7rem", letterSpacing: "1px", color: "#666", textTransform: "uppercase" }}>🌙</span>
+            <div style={{
+              width: "44px", height: "24px", borderRadius: "999px",
+              background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.15)",
+              position: "relative", transition: "background 0.3s"
+            }}>
+              <div style={{
+                position: "absolute", top: "3px", left: "3px",
+                width: "18px", height: "18px", borderRadius: "50%",
+                background: "linear-gradient(135deg, #e63232, #f0a030)",
+                transition: "transform 0.3s"
+              }} />
+            </div>
+            <span style={{ fontSize: "0.7rem", letterSpacing: "1px", color: "#444", textTransform: "uppercase" }}>☀️</span>
+          </div>
+
+          <button style={{ background: "linear-gradient(135deg, #e63232, #f0a030)", color: "#fff", border: "none", padding: "0.6rem 1.6rem", fontSize: "0.75rem", fontWeight: 600, letterSpacing: "2px", textTransform: "uppercase", cursor: "pointer", borderRadius: "2px", ...hover }}
+            onMouseEnter={e => { e.currentTarget.style.transform = "scale(1.05)"; e.currentTarget.style.boxShadow = "0 0 20px rgba(230,50,50,0.4)"; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = "scale(1)"; e.currentTarget.style.boxShadow = "none"; }}
+          >LOGIN</button>
+        </div>
       </nav>
 
       {/* HERO — Split layout with tracker card */}
