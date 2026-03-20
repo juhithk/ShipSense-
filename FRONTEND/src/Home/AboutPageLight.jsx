@@ -26,7 +26,7 @@ const font = {
   body: "'DM Sans', sans-serif",
 };
 
-export default function AboutPage({ toggleTheme }) {
+export default function AboutPageLight({ toggleTheme }) {
   const [visible, setVisible] = useState(false);
   const navigate = useNavigate();
 
@@ -41,7 +41,7 @@ export default function AboutPage({ toggleTheme }) {
   const navLinks = [
     { label: "About", path: "/about" },
     { label: "Partners", path: "#" },
-    { label: "Features", path: "features" },
+    { label: "Features", path: "/features" },
     { label: "Team", path: "#" },
     { label: "Contact", path: "#" },
   ];

@@ -1,11 +1,21 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useState } from 'react';
-import HomePage from './Home/HomePageDark';
+
+// Home
+import HomePageDark from './Home/HomePageDark';
 import HomePageLight from './Home/HomePageLight';
+
+// Home Pages
 import AboutPageDark from './Home/AboutPageDark';
-import AboutPage from './Home/AboutPageLight';
-import FeaturePageLight from './Home/FeaturePageLight';
+import AboutPageLight from './Home/AboutPageLight';
 import FeaturePageDark from './Home/FeaturePageDark';
+import FeaturePageLight from './Home/FeaturePageLight';
+
+// Admin
+import AdminDashboardDark from './Admin/AdminDashboardDark';
+import AdminDashboardLight from './Admin/AdminDashboardLight';
+
+// Global
 import GlobalStyles from './GlobalStyles';
 
 function App() {
@@ -16,26 +26,37 @@ function App() {
       <GlobalStyles />
       <Routes>
 
-        {/* HOME */}
+        {/* ─── HOME ─── */}
         <Route path="/" element={
           isLight
             ? <HomePageLight key="light" toggleTheme={() => setIsLight(false)} />
-            : <HomePage key="dark" toggleTheme={() => setIsLight(true)} />
+            : <HomePageDark key="dark" toggleTheme={() => setIsLight(true)} />
         } />
 
-        {/* ABOUT */}
+        {/* ─── HOME PAGES ─── */}
         <Route path="/about" element={
           isLight
-            ? <AboutPage key="light" toggleTheme={() => setIsLight(false)} />
+            ? <AboutPageLight key="light" toggleTheme={() => setIsLight(false)} />
             : <AboutPageDark key="dark" toggleTheme={() => setIsLight(true)} />
         } />
-
-        {/* FEATURES */}
         <Route path="/features" element={
           isLight
             ? <FeaturePageLight key="light" toggleTheme={() => setIsLight(false)} />
             : <FeaturePageDark key="dark" toggleTheme={() => setIsLight(true)} />
         } />
+
+        {/* ─── ADMIN ─── */}
+        <Route path="/admin" element={
+          isLight
+            ? <AdminDashboardLight key="light" toggleTheme={() => setIsLight(false)} />
+            : <AdminDashboardDark key="dark" toggleTheme={() => setIsLight(true)} />
+        } />
+
+        {/* ─── SUPPLIER ─── */}
+        {/* coming soon */}
+
+        {/* ─── CUSTOMER ─── */}
+        {/* coming soon */}
 
       </Routes>
     </Router>

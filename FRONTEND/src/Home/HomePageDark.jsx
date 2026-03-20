@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 const WORDS = ["ON TIME.", "EVERY DELAY.", "EVERY ROUTE.", "THE FUTURE."];
 
-export default function HomePage({ toggleTheme }) {
+export default function HomePageDark({ toggleTheme }) {
   const [wordIndex, setWordIndex] = useState(0);
   const [displayed, setDisplayed] = useState("");
   const [deleting, setDeleting] = useState(false);
