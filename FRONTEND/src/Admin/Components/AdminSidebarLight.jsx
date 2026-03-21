@@ -54,7 +54,7 @@ const links = [
     )
   },
   {
-    label: "User Management", path: "/admin/users",
+    label: "User Management", path: "/admin/user-management",
     icon: (active, hov) => (
       <svg width="22" height="22" viewBox="0 0 16 16" fill="none">
         <defs><linearGradient id="lgu" x1="0" y1="0" x2="16" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0%" stopColor={C.rose}/><stop offset="100%" stopColor={C.gold}/></linearGradient></defs>
@@ -176,8 +176,8 @@ export default function AdminSidebarLight({ hoveredWidth, setHoveredWidth }) {
         <div style={{ width: "44px", height: "44px", position: "relative" }}>
           <div
             onClick={() => { localStorage.clear(); navigate("/"); }}
-            onMouseEnter={() => setHovered("logout")}
-            onMouseLeave={() => setHovered(null)}
+            onMouseEnter={() => { setHovered("logout"); setHoveredWidth(110); }}
+            onMouseLeave={() => { setHovered(null); setHoveredWidth(0); }}
             title="Logout"
             style={{
               display: "flex", alignItems: "center",

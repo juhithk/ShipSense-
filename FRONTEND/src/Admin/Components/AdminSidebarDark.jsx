@@ -6,10 +6,10 @@ const links = [
     label: "Dashboard", path: "/admin",
     icon: (active, hov) => (
       <svg width="22" height="22" viewBox="0 0 16 16" fill="none">
-        <rect x="1" y="1" width="6" height="6" rx="1.5" fill={active ? "#e63232" : hov ? "#f0a030" : "#6a2828"}/>
-        <rect x="9" y="1" width="6" height="6" rx="1.5" fill={active ? "#f0a030" : hov ? "#e63232" : "#6a2828"}/>
-        <rect x="1" y="9" width="6" height="6" rx="1.5" fill={active ? "#f0a030" : hov ? "#e63232" : "#6a2828"}/>
-        <rect x="9" y="9" width="6" height="6" rx="1.5" fill={active ? "#e63232" : hov ? "#f0a030" : "#6a2828"}/>
+        <rect x="1" y="1" width="6" height="6" rx="1.5" fill={active || hov ? "#e63232" : "#6a2828"}/>
+        <rect x="9" y="1" width="6" height="6" rx="1.5" fill={active || hov ? "#e63232" : "#6a2828"}/>
+        <rect x="1" y="9" width="6" height="6" rx="1.5" fill={active || hov ? "#e63232" : "#6a2828"}/>
+        <rect x="9" y="9" width="6" height="6" rx="1.5" fill={active || hov ? "#e63232" : "#6a2828"}/>
       </svg>
     )
   },
@@ -46,7 +46,7 @@ const links = [
     )
   },
   {
-    label: "User Management", path: "/admin/users",
+    label: "User Management", path: "/admin/user-management",
     icon: (active, hov) => (
       <svg width="22" height="22" viewBox="0 0 16 16" fill="none">
         <defs><linearGradient id="gu" x1="0" y1="0" x2="16" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0%" stopColor="#e63232"/><stop offset="100%" stopColor="#f0a030"/></linearGradient></defs>
@@ -84,7 +84,6 @@ export default function AdminSidebarDark({ hoveredWidth, setHoveredWidth }) {
       paddingTop: "12px",
       overflow: "visible"
     }}>
-
       <style>{`
         @keyframes fadeLabel {
           from { opacity: 0; transform: translateX(8px); }
@@ -167,13 +166,13 @@ export default function AdminSidebarDark({ hoveredWidth, setHoveredWidth }) {
         })}
       </nav>
 
-      {/* LOGOUT */}
+      {/* LOGOUT — Fix 2: now calls setHoveredWidth */}
       <div style={{ padding: "0 12px 16px", width: "100%", display: "flex", justifyContent: "center", overflow: "visible" }}>
         <div style={{ width: "44px", height: "44px", position: "relative" }}>
           <div
             onClick={() => { localStorage.clear(); navigate("/"); }}
-            onMouseEnter={() => setHovered("logout")}
-            onMouseLeave={() => setHovered(null)}
+            onMouseEnter={() => { setHovered("logout"); setHoveredWidth(110); }}
+            onMouseLeave={() => { setHovered(null); setHoveredWidth(0); }}
             title="Logout"
             style={{
               display: "flex", alignItems: "center",
