@@ -1,0 +1,378 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import AdminNavbarDark from "../Components/AdminNavbarDark";
+import AdminSidebarDark from "../Components/AdminSidebarDark";
+
+const API = "http://localhost:5000/api/users";
+
+export default function AddUserDark({ toggleTheme }) {
+  const navigate = useNavigate();
+  const [hoveredWidth, setHoveredWidth] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [notification, setNotification] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [formData, setFormData] = useState({
+    Name: "", Email: "", Password: "", ConfirmPassword: "",
+    Role: "customer", Company: "", IsActive: true,
+  });
+
+  const handleChange = (e) => {
+    const val = e.target.name === "IsActive" ? e.target.value === "true" : e.target.value;
+    setFormData({ ...formData, [e.target.name]: val });
+  };
+
+  const handleSubmit = async () => {
+    if (!formData.Name.trim() || !formData.Email.trim() || !formData.Password) {
+      showNotification("error", "Name, Email and Password are required!");
+      return;
+    }
+    if (formData.Name.trim().length < 2) {
+      showNotification("error", "Name must be at least 2 characters!");
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.Email.trim())) {
+      showNotification("error", "Please enter a valid email address!");
+      return;
+    }
+    if (formData.Password.length < 8) {
+      showNotification("error", "Password must be at least 8 characters!");
+      return;
+    }
+    if (formData.Password !== formData.ConfirmPassword) {
+      showNotification("error", "Passwords do not match!");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const { ConfirmPassword, ...payload } = formData;
+      const cleanPayload = {
+        ...payload,
+        Name: payload.Name.trim(),
+        Email: payload.Email.trim().toLowerCase(),
+        Company: payload.Company.trim() || "",
+      };
+      const res = await fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(cleanPayload),
+      });
+      const data = await res.json();
+      if (data.success) {
+        showNotification("success", `${data.data.Name} added successfully!`);
+        setFormData({ Name: "", Email: "", Password: "", ConfirmPassword: "", Role: "customer", Company: "", IsActive: true });
+      } else {
+        if (data.message?.includes("duplicate") || data.message?.includes("E11000")) {
+          showNotification("error", `Email "${formData.Email.trim()}" already exists — use a unique email!`);
+        } else if (data.message?.includes("validation")) {
+          showNotification("error", "Invalid data — please check all fields!");
+        } else {
+          showNotification("error", data.message || "Failed to create user");
+        }
+      }
+    } catch (err) {
+      if (err.message?.includes("fetch")) {
+        showNotification("error", "Cannot connect to server — is the backend running?");
+      } else {
+        showNotification("error", "Something went wrong — please try again!");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const showNotification = (type, message) => {
+    setNotification({ type, message });
+    setTimeout(() => setNotification(null), type === "error" ? 4000 : 3000);
+  };
+
+  const filled = formData.Name.trim() && formData.Email.trim() && formData.Password && formData.ConfirmPassword;
+
+  const roleColor = (r) => {
+    if (r === "admin")    return "#f0a030";
+    if (r === "supplier") return "#60a5fa";
+    return "#4ade80";
+  };
+
+  const EyeIcon = ({ show }) => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+      {show ? <><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></> : <><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></>}
+    </svg>
+  );
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", background: "#07060a", color: "#e0d8d0", fontFamily: "'Inter',sans-serif", overflow: "hidden" }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap');
+        @keyframes pulseOrb  { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.1);opacity:0.7} }
+        @keyframes fadeUp    { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes slideRight{ from{opacity:0;transform:translateX(30px)} to{opacity:1;transform:translateX(0)} }
+        @keyframes gradFlow  { 0%{background-position:0%} 100%{background-position:200%} }
+        @keyframes spin      { to{transform:rotate(360deg)} }
+        @keyframes glowPulse { 0%,100%{box-shadow:0 4px 24px rgba(230,50,50,0.25)} 50%{box-shadow:0 4px 40px rgba(230,50,50,0.45)} }
+
+        .fade-up-au   { animation: fadeUp 0.5s ease forwards; }
+        .fade-up-au-1 { animation: fadeUp 0.5s 0.05s ease forwards; opacity: 0; }
+        .slide-right-au { animation: slideRight 0.35s ease forwards; }
+
+        .form-input-au {
+          width: 100%; padding: 12px 16px;
+          background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+          border-radius: 8px; color: #e0d8d0; font-size: 0.88rem;
+          font-family: 'Inter',sans-serif; box-sizing: border-box; transition: all 0.2s;
+        }
+        .form-input-au:focus {
+          outline: none; border-color: rgba(230,50,50,0.5);
+          background: rgba(255,255,255,0.06); box-shadow: 0 0 0 3px rgba(230,50,50,0.07);
+        }
+        .form-input-au::placeholder { color: #3a2a25; }
+        .form-input-au:not(:placeholder-shown) { border-color: rgba(230,50,50,0.2); }
+        select.form-input-au option { background: #0f0d13; color: #e0d8d0; }
+
+        .back-btn-au {
+          background: transparent; border: 1px solid rgba(255,255,255,0.08);
+          color: #7a6a60; padding: 10px 20px; border-radius: 8px;
+          cursor: pointer; font-size: 0.78rem; font-family: 'Inter',sans-serif; transition: all 0.2s;
+        }
+        .back-btn-au:hover { color: #e0d8d0; border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.03); }
+
+        .submit-ready-au {
+          width: 100%; padding: 15px; background: linear-gradient(135deg,#e63232,#f0a030);
+          border: none; border-radius: 10px; color: #fff; font-size: 0.88rem;
+          font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+          cursor: pointer; font-family: 'Inter',sans-serif;
+          animation: glowPulse 3s ease infinite; transition: all 0.3s;
+          position: relative; overflow: hidden;
+        }
+        .submit-ready-au:hover { transform: translateY(-2px); }
+        .submit-ready-au::after {
+          content: ''; position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+          background: linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent); transition: left 0.5s;
+        }
+        .submit-ready-au:hover::after { left: 150%; }
+
+        .submit-disabled-au {
+          width: 100%; padding: 15px; background: rgba(255,255,255,0.03);
+          border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; color: #3a2a25;
+          font-size: 0.88rem; font-weight: 700; letter-spacing: 2px;
+          text-transform: uppercase; cursor: not-allowed; font-family: 'Inter',sans-serif;
+        }
+
+        .spinner-au {
+          width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3);
+          border-top-color: #fff; border-radius: 50%;
+          animation: spin 0.8s linear infinite; display: inline-block;
+        }
+
+        .eye-btn { background: none; border: none; cursor: pointer; color: #7a6a60;
+          position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+          display: flex; align-items: center; transition: color 0.2s; padding: 0; }
+        .eye-btn:hover { color: #e0d8d0; }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(230,50,50,0.25); border-radius: 4px; }
+      `}</style>
+
+      <AdminNavbarDark toggleTheme={toggleTheme} pageTitle="ADD USER" pageSubtitle="CREATE NEW" />
+
+      <div style={{ display: "flex", flex: 1, overflow: "visible" }}>
+        <AdminSidebarDark hoveredWidth={hoveredWidth} setHoveredWidth={setHoveredWidth} />
+
+        <div style={{ marginLeft: `${68 + hoveredWidth}px`, flex: 1, padding: "2rem 2.5rem", transition: "margin-left 0.28s cubic-bezier(0.4,0,0.2,1)", position: "relative" }}>
+
+          <div style={{ position: "fixed", top: "-100px", right: "-100px", width: "500px", height: "500px", borderRadius: "50%", background: "radial-gradient(circle,rgba(230,50,50,0.1),transparent 70%)", animation: "pulseOrb 6s ease-in-out infinite", pointerEvents: "none", zIndex: 0 }} />
+          <div style={{ position: "fixed", bottom: "-150px", left: "5%", width: "600px", height: "600px", borderRadius: "50%", background: "radial-gradient(circle,rgba(240,160,48,0.06),transparent 70%)", animation: "pulseOrb 8s ease-in-out infinite reverse", pointerEvents: "none", zIndex: 0 }} />
+
+          {notification && (
+            <div className="slide-right-au" style={{
+              position: "fixed", top: "80px", right: "2rem", zIndex: 1000,
+              padding: "1rem 1.4rem", borderRadius: "10px",
+              background: notification.type === "success"
+                ? "linear-gradient(135deg,rgba(74,222,128,0.12),rgba(74,222,128,0.06))"
+                : "linear-gradient(135deg,rgba(248,113,113,0.12),rgba(248,113,113,0.06))",
+              border: `1px solid ${notification.type === "success" ? "rgba(74,222,128,0.3)" : "rgba(248,113,113,0.3)"}`,
+              color: notification.type === "success" ? "#4ade80" : "#f87171",
+              backdropFilter: "blur(16px)", display: "flex", alignItems: "center", gap: "0.8rem", minWidth: "280px", maxWidth: "400px"
+            }}>
+              <div style={{ width: "30px", height: "30px", borderRadius: "50%", background: notification.type === "success" ? "rgba(74,222,128,0.15)" : "rgba(248,113,113,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.9rem", flexShrink: 0 }}>
+                {notification.type === "success" ? "✓" : "✕"}
+              </div>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: "0.82rem", marginBottom: "2px" }}>{notification.type === "success" ? "User Created!" : "Error"}</div>
+                <div style={{ opacity: 0.8, fontSize: "0.76rem", lineHeight: 1.4 }}>{notification.message}</div>
+              </div>
+            </div>
+          )}
+
+          {/* PAGE HEADER */}
+          <div className="fade-up-au" style={{ marginBottom: "2rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end", position: "relative", zIndex: 1 }}>
+            <div>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
+                <div style={{ width: "24px", height: "2px", background: "linear-gradient(90deg,#e63232,#f0a030)", borderRadius: "2px" }} />
+                <span style={{ fontSize: "0.6rem", letterSpacing: "4px", textTransform: "uppercase", background: "linear-gradient(90deg,#e63232,#f0a030)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", fontWeight: 700 }}>Create</span>
+              </div>
+              <h1 style={{ fontFamily: "'Bebas Neue',sans-serif", fontSize: "2.8rem", background: "linear-gradient(135deg,#ffffff 0%,#e0c8c0 50%,#f0a030 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", letterSpacing: "3px", lineHeight: 1, margin: 0 }}>NEW USER</h1>
+              <div style={{ fontSize: "0.76rem", color: "#a89888", marginTop: "6px" }}>Fill in the details — required fields marked with *</div>
+            </div>
+            <button className="back-btn-au" onClick={() => navigate("/admin/user-management")}>← Back to Users</button>
+          </div>
+
+          <div className="fade-up-au-1" style={{ display: "grid", gridTemplateColumns: "1fr 360px", gap: "24px", position: "relative", zIndex: 1 }}>
+
+            {/* FORM CARD */}
+            <div style={{ background: "linear-gradient(145deg,rgba(255,255,255,0.025),rgba(230,50,50,0.015))", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "16px", overflow: "hidden" }}>
+              <div style={{ height: "2px", background: "linear-gradient(90deg,#e63232,#f0a030,#e63232)", backgroundSize: "200%", animation: "gradFlow 3s linear infinite" }} />
+              <div style={{ padding: "2rem" }}>
+
+                {/* Account Info */}
+                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "1.2rem" }}>
+                  <div style={{ width: "3px", height: "16px", background: "linear-gradient(to bottom,#e63232,#f0a030)", borderRadius: "2px" }} />
+                  <span style={{ fontSize: "0.62rem", letterSpacing: "3px", textTransform: "uppercase", color: "#a89888", fontWeight: 700 }}>Account Info</span>
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "1rem" }}>
+                  <div>
+                    <label style={{ fontSize: "0.62rem", letterSpacing: "2px", textTransform: "uppercase", color: "#8a7a70", marginBottom: "6px", display: "block", fontWeight: 600 }}>Name <span style={{ color: "#e63232" }}>*</span></label>
+                    <input className="form-input-au" type="text" name="Name" placeholder="e.g. Arnab Roy" value={formData.Name} onChange={handleChange} />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: "0.62rem", letterSpacing: "2px", textTransform: "uppercase", color: "#8a7a70", marginBottom: "6px", display: "block", fontWeight: 600 }}>Email <span style={{ color: "#e63232" }}>*</span></label>
+                    <input className="form-input-au" type="email" name="Email" placeholder="e.g. arnab@shipsense.com" value={formData.Email} onChange={handleChange} />
+                  </div>
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "1rem" }}>
+                  <div>
+                    <label style={{ fontSize: "0.62rem", letterSpacing: "2px", textTransform: "uppercase", color: "#8a7a70", marginBottom: "6px", display: "block", fontWeight: 600 }}>Password <span style={{ color: "#e63232" }}>*</span></label>
+                    <div style={{ position: "relative" }}>
+                      <input className="form-input-au" type={showPassword ? "text" : "password"} name="Password" placeholder="Min 8 characters" value={formData.Password} onChange={handleChange} style={{ paddingRight: "42px" }} />
+                      <button className="eye-btn" type="button" onClick={() => setShowPassword(!showPassword)}><EyeIcon show={showPassword} /></button>
+                    </div>
+                  </div>
+                  <div>
+                    <label style={{ fontSize: "0.62rem", letterSpacing: "2px", textTransform: "uppercase", color: "#8a7a70", marginBottom: "6px", display: "block", fontWeight: 600 }}>Confirm Password <span style={{ color: "#e63232" }}>*</span></label>
+                    <div style={{ position: "relative" }}>
+                      <input className="form-input-au" type={showConfirm ? "text" : "password"} name="ConfirmPassword" placeholder="Repeat password" value={formData.ConfirmPassword} onChange={handleChange} style={{ paddingRight: "42px" }} />
+                      <button className="eye-btn" type="button" onClick={() => setShowConfirm(!showConfirm)}><EyeIcon show={showConfirm} /></button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Password match indicator */}
+                {formData.Password && formData.ConfirmPassword && (
+                  <div style={{ fontSize: "0.72rem", marginBottom: "0.5rem", color: formData.Password === formData.ConfirmPassword ? "#4ade80" : "#f87171", display: "flex", alignItems: "center", gap: "6px" }}>
+                    <span>{formData.Password === formData.ConfirmPassword ? "✓" : "✕"}</span>
+                    {formData.Password === formData.ConfirmPassword ? "Passwords match" : "Passwords do not match"}
+                  </div>
+                )}
+
+                <div style={{ height: "1px", background: "linear-gradient(90deg,transparent,rgba(255,255,255,0.06),transparent)", margin: "1.5rem 0" }} />
+
+                {/* Role & Company */}
+                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "1.2rem" }}>
+                  <div style={{ width: "3px", height: "16px", background: "linear-gradient(to bottom,#e63232,#f0a030)", borderRadius: "2px" }} />
+                  <span style={{ fontSize: "0.62rem", letterSpacing: "3px", textTransform: "uppercase", color: "#a89888", fontWeight: 700 }}>Role & Company</span>
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "1rem" }}>
+                  <div>
+                    <label style={{ fontSize: "0.62rem", letterSpacing: "2px", textTransform: "uppercase", color: "#8a7a70", marginBottom: "6px", display: "block", fontWeight: 600 }}>Role</label>
+                    <select className="form-input-au" name="Role" value={formData.Role} onChange={handleChange}>
+                      <option value="customer">Customer</option>
+                      <option value="supplier">Supplier</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style={{ fontSize: "0.62rem", letterSpacing: "2px", textTransform: "uppercase", color: "#8a7a70", marginBottom: "6px", display: "block", fontWeight: 600 }}>Company <span style={{ color: "#4a3a35", fontWeight: 400 }}>(optional)</span></label>
+                    <input className="form-input-au" type="text" name="Company" placeholder="e.g. Arnab Logistics" value={formData.Company} onChange={handleChange} />
+                  </div>
+                </div>
+
+                <div style={{ height: "1px", background: "linear-gradient(90deg,transparent,rgba(255,255,255,0.06),transparent)", margin: "1.5rem 0" }} />
+
+                {/* Status */}
+                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "1.2rem" }}>
+                  <div style={{ width: "3px", height: "16px", background: "linear-gradient(to bottom,#4ade80,#60a5fa)", borderRadius: "2px" }} />
+                  <span style={{ fontSize: "0.62rem", letterSpacing: "3px", textTransform: "uppercase", color: "#a89888", fontWeight: 700 }}>Account Status</span>
+                </div>
+
+                <div style={{ maxWidth: "200px" }}>
+                  <label style={{ fontSize: "0.62rem", letterSpacing: "2px", textTransform: "uppercase", color: "#8a7a70", marginBottom: "6px", display: "block", fontWeight: 600 }}>Status</label>
+                  <select className="form-input-au" name="IsActive" value={String(formData.IsActive)} onChange={handleChange}>
+                    <option value="true">Active</option>
+                    <option value="false">Inactive</option>
+                  </select>
+                </div>
+
+              </div>
+            </div>
+
+            {/* RIGHT SIDEBAR */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+
+              {/* Live Preview */}
+              <div style={{ background: "linear-gradient(145deg,rgba(230,50,50,0.05),rgba(240,160,48,0.02))", border: "1px solid rgba(230,50,50,0.15)", borderRadius: "14px", overflow: "hidden" }}>
+                <div style={{ height: "2px", background: "linear-gradient(90deg,#e63232,#f0a030,#e63232)", backgroundSize: "200%", animation: "gradFlow 3s linear infinite" }} />
+                <div style={{ padding: "14px 18px", borderBottom: "1px solid rgba(255,255,255,0.05)", display: "flex", alignItems: "center", gap: "8px" }}>
+                  <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#e63232", animation: "pulseOrb 2s ease-in-out infinite" }} />
+                  <span style={{ fontSize: "0.62rem", letterSpacing: "3px", textTransform: "uppercase", color: "#a89888", fontWeight: 700 }}>Live Preview</span>
+                </div>
+                {/* Avatar preview */}
+                <div style={{ padding: "16px 18px 8px", display: "flex", justifyContent: "center" }}>
+                  <div style={{ width: "56px", height: "56px", borderRadius: "50%", background: "linear-gradient(135deg,rgba(230,50,50,0.2),rgba(240,160,48,0.15))", border: "1px solid rgba(230,50,50,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.4rem", fontWeight: 700, color: "#f0a030", fontFamily: "'Bebas Neue',sans-serif" }}>
+                    {formData.Name?.trim().charAt(0).toUpperCase() || "?"}
+                  </div>
+                </div>
+                <div style={{ padding: "8px 18px 16px" }}>
+                  {[
+                    { label: "Name",    val: formData.Name },
+                    { label: "Email",   val: formData.Email },
+                    { label: "Role",    val: formData.Role, color: roleColor(formData.Role) },
+                    { label: "Company", val: formData.Company },
+                    { label: "Status",  val: formData.IsActive ? "Active" : "Inactive", color: formData.IsActive ? "#4ade80" : "#888" },
+                  ].map((item, i) => (
+                    <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "7px 0", borderBottom: i < 4 ? "1px solid rgba(255,255,255,0.04)" : "none" }}>
+                      <span style={{ fontSize: "0.65rem", letterSpacing: "1.5px", textTransform: "uppercase", color: "#5a4a45" }}>{item.label}</span>
+                      <span style={{ fontSize: "0.82rem", color: item.val ? (item.color || "#d4c4b8") : "#3a2a25", fontWeight: item.val ? 500 : 400, textTransform: item.label === "Role" ? "capitalize" : "none" }}>{item.val || "—"}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Submit */}
+              <button className={filled && !loading ? "submit-ready-au" : "submit-disabled-au"} onClick={handleSubmit} disabled={loading || !filled}>
+                {loading ? (
+                  <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
+                    <span className="spinner-au" /> Creating...
+                  </span>
+                ) : filled ? "Create User →" : "Fill required fields first"}
+              </button>
+
+              {/* Tips */}
+              <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: "14px", padding: "16px 18px" }}>
+                <div style={{ fontSize: "0.6rem", letterSpacing: "2px", textTransform: "uppercase", color: "#5a4a45", marginBottom: "12px", fontWeight: 700 }}>Quick Tips</div>
+                {[
+                  "Email must be unique — duplicates are rejected",
+                  "Password is stored securely (hashed)",
+                  "Admins have full access to all features",
+                  "Suppliers can only manage their own shipments",
+                  "Customers have read-only access",
+                  "Inactive users cannot log in",
+                ].map((tip, i) => (
+                  <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: "8px", marginBottom: i < 5 ? "10px" : "0" }}>
+                    <div style={{ width: "4px", height: "4px", borderRadius: "50%", background: "linear-gradient(135deg,#e63232,#f0a030)", marginTop: "6px", flexShrink: 0 }} />
+                    <div style={{ fontSize: "0.76rem", color: "#7a6a60", lineHeight: 1.5 }}>{tip}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
