@@ -16,10 +16,10 @@ export default function AboutPageDark({ toggleTheme }) {
 
   const navLinks = [
     { label: "About", path: "/about" },
-    { label: "Partners", path: "#" },
+    { label: "Partners", path: "/partners" },
     { label: "Features", path: "/features" },
-    { label: "Team", path: "#" },
-    { label: "Contact", path: "#" },
+    { label: "Team", path: "/team" },
+    { label: "Contact", path: "/contact" },
   ];
 
   return (
@@ -191,9 +191,9 @@ export default function AboutPageDark({ toggleTheme }) {
       </section>
 
       {/* FOOTER */}
-      <footer style={{ padding: "2rem 4rem", display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid rgba(255,255,255,0.04)" }}>
+      <footer style={{ padding: "2rem 4rem", display: "grid", gridTemplateColumns: "1fr 1fr 1fr", alignItems: "center", borderTop: "1px solid rgba(255,255,255,0.04)" }}>
         <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "1.4rem", letterSpacing: "4px", background: "linear-gradient(90deg,#e63232,#f0a030)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>SHIPSENSE</div>
-        <div style={{ display: "flex", gap: "2.5rem" }}>
+        <div style={{ display: "flex", gap: "2.5rem", justifyContent: "center" }}>
           {["Privacy", "Terms", "Help"].map(l => (
             <a key={l} href="#" style={{ fontSize: "0.7rem", letterSpacing: "2px", textTransform: "uppercase", color: "#333", textDecoration: "none", transition: "color 0.2s" }}
               onMouseEnter={e => e.target.style.color = "#f0a030"}
@@ -201,7 +201,7 @@ export default function AboutPageDark({ toggleTheme }) {
             >{l}</a>
           ))}
         </div>
-        <div style={{ fontSize: "0.65rem", color: "#222", letterSpacing: "1px" }}>© 2026 SHIPSENSE. ALL RIGHTS RESERVED.</div>
+        <div style={{ fontSize: "0.65rem", color: "#222", letterSpacing: "1px", textAlign: "right" }}>© 2026 SHIPSENSE. ALL RIGHTS RESERVED.</div>
       </footer>
 
     </div>

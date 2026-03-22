@@ -63,10 +63,10 @@ export default function HomePageLight({ toggleTheme }) {
 
   const navLinks = [
     { label: "About", path: "/about" },
-    { label: "Partners", path: "#" },
+    { label: "Partners", path: "/partners" },
     { label: "Features", path: "/features" },
-    { label: "Team", path: "#" },
-    { label: "Contact", path: "#" },
+    { label: "Team", path: "/team" },
+    { label: "Contact", path: "/contact" },
   ];
 
   return (
@@ -343,14 +343,14 @@ export default function HomePageLight({ toggleTheme }) {
       </div>
 
       {/* FOOTER */}
-      <footer style={{ padding: "2rem 4rem", display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: `1px solid ${C.border}`, background: C.bg }}>
+      <footer style={{ padding: "2rem 4rem", display: "grid", gridTemplateColumns: "1fr 1fr 1fr", alignItems: "center", borderTop: `1px solid ${C.border}`, background: C.bg }}>
         <div style={{ fontFamily: font.cursive, fontSize: "2rem", fontWeight: 600, letterSpacing: "1px", background: `linear-gradient(90deg,${C.rose},${C.gold})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>ShipSense</div>
-        <div style={{ display: "flex", gap: "2.5rem" }}>
+        <div style={{ display: "flex", gap: "2.5rem", justifyContent: "center" }}>
           {["Privacy", "Terms", "Help"].map(l => (
             <a key={l} href="#" className="light-footer-link">{l}</a>
           ))}
         </div>
-        <div style={{ fontSize: "0.65rem", color: C.inkFaint, letterSpacing: "1px", fontFamily: font.body }}>© 2026 ShipSense. All Rights Reserved.</div>
+        <div style={{ fontSize: "0.65rem", color: C.inkFaint, letterSpacing: "1px", fontFamily: font.body, textAlign: "right" }}>© 2026 SHIPSENSE. ALL RIGHTS RESERVED.</div>
       </footer>
 
     </div>
